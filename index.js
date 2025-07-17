@@ -425,30 +425,29 @@ function draw(time) {
     const name = conf["mapping"][anim["signalNames"][i]];
     if (!name) continue;
 
-    const elementConf = conf["elements"][name];
-    if (elementConf) {
-      if (!setRequests[name]) {
+    const growRequest = (n, conf) => {
+      if (!setRequests[n]) {
         let newEntry = {};
         newEntry[point] = [];
-        setRequests[name] = newEntry;
+        setRequests[n] = newEntry;
       }
-      // skip partial config with specific signal values missing
-      if (setRequests[name][point]) {
-        setRequests[name][point].push(elementConf[point]);
+      if (setRequests[n][point]) {
+        setRequests[n][point].push(conf[point]);
+      } else {
+        setRequests[n][point] = [conf[point]];
       }
+    };
+    const elementConf = conf["elements"][name];
+    if (elementConf) {
+      growRequest(name, elementConf);
     } else {
       // name correspond to a group
       const groupConf = conf["groups"][name];
       for (const [elementName, conf] of Object.entries(groupConf)) {
-        if (!setRequests[elementName]) {
-          let newEntry = {};
-          newEntry[point] = [];
-          setRequests[elementName] = newEntry;
+        if (elementName == "cnm1_out" && point == "1") {
+          console.log("here");
         }
-        // skip partial config with specific signal values missing
-        if (setRequests[elementName][point]) {
-          setRequests[elementName][point].push(conf[point]);
-        }
+        growRequest(elementName, conf);
       }
     }
   }
