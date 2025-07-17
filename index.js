@@ -231,19 +231,19 @@ function verify() {
     return;
   }
 
-  for (const signalName in anim["signalNames"]) {
+  for (const signalName of anim["signalNames"]) {
     const mappedName = conf["mapping"][signalName];
     if (!mappedName) {
       continue;
     }
 
-    if (conf["elements"].has(mappedName)) {
-      if (conf["groups"].has(mappedName)) {
+    if (conf["elements"][mappedName]) {
+      if (conf["groups"][mappedName]) {
         terminal.textContent = `"${mappedName}" is both an element and a group.`;
         return;
       }
     } else {
-      if (!conf["groups"].has(mappedName)) {
+      if (!conf["groups"][mappedName]) {
         terminal.textContent = `"${mappedName}" is neither an element nor a group.`;
         return;
       }
@@ -432,7 +432,10 @@ function draw(time) {
         newEntry[point] = [];
         setRequests[name] = newEntry;
       }
-      setRequests[name][point].push(elementConf[point]);
+      // skip partial config with specific signal values missing
+      if (setRequests[name][point]) {
+        setRequests[name][point].push(elementConf[point]);
+      }
     } else {
       // name correspond to a group
       const groupConf = conf["groups"][name];
@@ -442,7 +445,10 @@ function draw(time) {
           newEntry[point] = [];
           setRequests[elementName] = newEntry;
         }
-        setRequests[elementName][point].push(conf[point]);
+        // skip partial config with specific signal values missing
+        if (setRequests[elementName][point]) {
+          setRequests[elementName][point].push(conf[point]);
+        }
       }
     }
   }
@@ -452,6 +458,7 @@ function draw(time) {
     const signalToSet = Object.keys(valueRequests).sort().slice(-1)[0];
     // pick a random value to set, for now
     const attributesToSet = valueRequests[signalToSet][0];
+    if (!attributesToSet) continue;
 
     const element = document.getElementById(name);
     modifyElement(element, attributesToSet);
