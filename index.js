@@ -256,6 +256,9 @@ function verify() {
 
 /* Animation Control */
 
+const progressBar = document.getElementById("progressBar");
+const progressHandle = document.getElementById("progressHandle");
+const progressFill = document.getElementById("progressFill");
 const repeatButton = document.getElementById("repeatBtn");
 
 let isDragging = false;
@@ -265,6 +268,53 @@ let isStarted = false;
 let isPlaying = false;
 let isRepeating = false;
 let lastAnimateTime;
+
+progressBar.addEventListener("click", function (e) {
+  if (!isDragging) {
+    const rect = progressBar.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const progress = Math.max(0, Math.min(1, clickX / rect.width));
+    setProgress(progress);
+
+    draw();
+  }
+});
+
+progressHandle.addEventListener("mousedown", function (e) {
+  if (isPlaying) {
+    pauseAnimation();
+  }
+
+  isDragging = true;
+  progressHandle.classList.add("dragging");
+  e.preventDefault();
+});
+
+document.addEventListener("mousemove", function (e) {
+  if (isDragging) {
+    const rect = progressBar.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const progress = Math.max(0, Math.min(1, mouseX / rect.width));
+    setProgress(progress);
+
+    draw();
+  }
+});
+
+document.addEventListener("mouseup", function () {
+  if (isDragging) {
+    isDragging = false;
+    progressHandle.classList.remove("dragging");
+  }
+});
+
+function setProgress(progress) {
+  animationProgress = progress;
+
+  const percentage = progress * 100;
+  progressFill.style.width = percentage + "%";
+  progressHandle.style.left = percentage + "%";
+}
 
 function animate(currentTime) {
   if (!isPlaying) return;
@@ -390,6 +440,8 @@ function modifyElement(element, attributes) {
 }
 
 function draw() {
+  setProgress(animationProgress);
+
   const animTime =
     (1 - animationProgress) * startTime + animationProgress * endTime;
   let animIndex;
