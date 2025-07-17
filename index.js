@@ -360,28 +360,30 @@ function lowerBound(arr, searchKey) {
   return ans;
 }
 
-function modifyElement(element, attribute, value) {
-  if (attribute == "style") {
-    let oldValues = (element.getAttribute("style") ?? "").split(";");
-    let newValues = [];
-    for (let [styleAttribute, styleValue] of Object.entries(value)) {
-      const setString = styleAttribute + ":" + styleValue;
-      let existing = false;
-      for (let [i, oldValue] of oldValues.entries()) {
-        if (oldValue.startsWith(styleAttribute)) {
-          existing = true;
-          oldValues[i] = setString;
-          break;
+function modifyElement(element, attributes) {
+  for (const [attribute, value] of Object.entries(attributes)) {
+    if (attribute == "style") {
+      let oldValues = (element.getAttribute("style") ?? "").split(";");
+      let newValues = [];
+      for (let [styleAttribute, styleValue] of Object.entries(value)) {
+        const setString = styleAttribute + ":" + styleValue;
+        let existing = false;
+        for (let [i, oldValue] of oldValues.entries()) {
+          if (oldValue.startsWith(styleAttribute)) {
+            existing = true;
+            oldValues[i] = setString;
+            break;
+          }
+        }
+        if (!existing) {
+          newValues.push(setString);
         }
       }
-      if (!existing) {
-        newValues.push(setString);
-      }
-    }
 
-    element.setAttribute("style", oldValues.concat(newValues).join(";"));
-  } else {
-    element.setAttribute(attribute, value);
+      element.setAttribute("style", oldValues.concat(newValues).join(";"));
+    } else {
+      element.setAttribute(attribute, value);
+    }
   }
 }
 
@@ -395,33 +397,62 @@ function draw(time) {
   }
   const signal = anim["signals"][animIndex];
 
+  /*
+  {
+    "elementA": {
+      "value0": [
+        {
+          "attributeA": "setA",
+          "attributeB": "setB"
+        },
+        {
+          "style": {
+            "attributeC": "setC"
+          }
+        }
+      ],
+      "value1": [
+        ...
+      ]
+    },
+    "elementB": {
+      ...
+    }
+  }
+  */
+  let setRequests = {};
   for (const [i, point] of signal.entries()) {
     const name = conf["mapping"][anim["signalNames"][i]];
 
     const elementConf = conf["elements"][name];
     if (elementConf) {
-      const attributes = elementConf[point];
-      const element = document.getElementById(name);
-      for (const [attribute, value] of Object.entries(attributes)) {
-        modifyElement(element, attribute, value);
+      if (!setRequests[name]) {
+        let newEntry = {};
+        newEntry[point] = [];
+        setRequests[name] = newEntry;
+      }
+      setRequests[name][point].push(elementConf[point]);
+    } else {
+      // name correspond to a group
+      const groupConf = conf["groups"][name];
+      for (const [elementName, conf] of Object.entries(groupConf)) {
+        if (!setRequests[elementName]) {
+          let newEntry = {};
+          newEntry[point] = [];
+          setRequests[elementName] = newEntry;
+        }
+        setRequests[elementName][point].push(conf[point]);
       }
     }
+  }
 
-    // TODO: groups
+  for (const [name, valueRequests] of Object.entries(setRequests)) {
+    // pick "1" over "0", for now
+    const signalToSet = Object.keys(valueRequests).sort().slice(-1)[0];
+    // pick a random value to set, for now
+    const attributesToSet = valueRequests[signalToSet][0];
+
+    const element = document.getElementById(name);
+    modifyElement(element, attributesToSet);
   }
 }
-
-// function animate() {
-//   var circle = document.getElementById("circle");
-//   var style = circle.getAttribute("style");
-
-//   if (style == "fill: red") {
-//     circle.setAttribute("style", "fill: blue");
-//   } else if (style == "fill: blue") {
-//     circle.setAttribute("style", "fill: red");
-//   } else {
-//     circle.setAttribute("style", "fill: red");
-//   }
-// }
-
-// setInterval(animate, 500);
