@@ -1,0 +1,48 @@
+{
+  "animStart": 10,
+  "animEnd": 20,
+  "animScale": 10,
+  "mapping": {
+    "cIrClEa": "circleA",
+    "CiRcLeB": "circleB",
+    "MaGiC": "circles"
+  },
+  "elements": {
+    "circleA": {
+      "0": {
+        "style": "fill: red"
+      },
+      "1": {
+        "style": "fill: blue"
+      }
+    },
+    "circleB": {
+      "0": {
+        "style": "fill: red"
+      },
+      "1": {
+        "style": "fill: blue"
+      }
+    }
+  },
+  "groups": {
+    "circles": {
+      "circleC": {
+        "0": {
+          "style": "fill: red"
+        },
+        "1": {
+          "style": "fill: blue"
+        }
+      },
+      "circleD": {
+        "0": {
+          "style": "fill: red"
+        },
+        "1": {
+          "style": "fill: blue"
+        }
+      }
+    }
+  }
+}

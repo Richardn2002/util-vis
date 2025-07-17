@@ -1,0 +1,344 @@
+<!doctype html>
+<html>
+    <head>
+        <title>UtilVis: Utilization Visualizer</title>
+    </head>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            padding-bottom: 70px;
+        }
+
+        #svgContainer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 70px;
+            width: 100%;
+            overflow: auto;
+            background-color: #f5f5f5;
+        }
+
+        /* Control bar styling */
+        .control-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 70px;
+            background-color: #2c3e50;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            padding: 0 10px;
+            box-sizing: border-box;
+        }
+
+        /* Quarter sections */
+        .quarter {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 0 5px;
+        }
+
+        /* Button styling */
+        .control-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        .control-btn:hover {
+            background-color: #2980b9;
+        }
+        .control-btn:active {
+            transform: translateY(1px);
+        }
+
+        /* Play button */
+        .control-btn.play {
+            background-color: #27ae60;
+        }
+        .control-btn.play:hover {
+            background-color: #229954;
+        }
+
+        /* Pause button */
+        .control-btn.pause {
+            background-color: #f39c12;
+        }
+        .control-btn.pause:hover {
+            background-color: #e67e22;
+        }
+
+        /* Repeat button - toggleable */
+        .control-btn.repeat {
+            background-color: #95a5a6;
+        }
+        .control-btn.repeat:hover {
+            background-color: #7f8c8d;
+        }
+        .control-btn.repeat.active {
+            background-color: #e74c3c;
+        }
+        .control-btn.repeat.active:hover {
+            background-color: #c0392b;
+        }
+
+        /* Input styling */
+        .control-input {
+            background-color: #34495e;
+            color: white;
+            border: 1px solid #5d6d7e;
+            padding: 6px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            width: 60px;
+            text-align: center;
+        }
+        .control-input:focus {
+            outline: none;
+            border-color: #3498db;
+            background-color: #2c3e50;
+        }
+        /* Disable up and down arrows */
+        .control-input::-webkit-outer-spin-button,
+        .control-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .control-input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        /* Input labels */
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+        }
+        .input-label {
+            color: #bdc3c7;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        /* File upload buttons */
+        .file-btn {
+            background-color: #8e44ad;
+            position: relative;
+            overflow: hidden;
+        }
+        .file-btn:hover {
+            background-color: #7d3c98;
+        }
+        .file-btn input[type="file"] {
+            position: absolute;
+            left: -9999px;
+        }
+        .verify-btn {
+            background-color: #27ae60;
+            position: relative;
+            overflow: hidden;
+        }
+        .verify-btn:hover {
+            background-color: #229954;
+        }
+
+        /* Terminal display */
+        .terminal {
+            background-color: #1a1a1a;
+            color: #00ff00;
+            font-family: "Courier New", monospace;
+            width: 100%;
+            font-size: 20px;
+            padding: 8px;
+            border-radius: 4px;
+            height: 40px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            border: 1px solid #333;
+        }
+
+        /* Hidden file inputs */
+        .hidden-input {
+            display: none;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 1200px) {
+            .control-btn {
+                padding: 6px 8px;
+                font-size: 10px;
+            }
+
+            .control-input {
+                width: 50px;
+                font-size: 10px;
+            }
+
+            .quarter {
+                gap: 4px;
+            }
+        }
+
+        @media (max-width: 800px) {
+            .control-bar {
+                height: 60px;
+                font-size: 10px;
+            }
+
+            .control-btn {
+                padding: 4px 6px;
+                font-size: 9px;
+            }
+
+            .terminal {
+                min-width: 120px;
+                font-size: 9px;
+            }
+        }
+    </style>
+    <body>
+        <div id="svgContainer" style="position: absolute"></div>
+
+        <!-- Animation Control Bar -->
+        <div class="control-bar">
+            <!-- First Quarter: Play Controls -->
+            <div class="quarter">
+                <button class="control-btn play" onclick="playAnimation()">
+                    ▶ Play
+                </button>
+                <button class="control-btn pause" onclick="pauseAnimation()">
+                    ⏸ Pause
+                </button>
+                <button
+                    class="control-btn repeat"
+                    id="repeatBtn"
+                    onclick="toggleRepeat()"
+                >
+                    🔁 Repeat
+                </button>
+            </div>
+
+            <!-- Second Quarter: Time Controls -->
+            <div class="quarter">
+                <div class="input-group">
+                    <label class="input-label">Start</label>
+                    <input
+                        type="number"
+                        class="control-input"
+                        id="startTime"
+                        value="0"
+                        step="0.1"
+                        autocomplete="off"
+                        onchange="updateStartTime()"
+                    />
+                </div>
+                <div class="input-group">
+                    <label class="input-label">End</label>
+                    <input
+                        type="number"
+                        class="control-input"
+                        id="endTime"
+                        value="10"
+                        step="0.1"
+                        autocomplete="off"
+                        onchange="updateEndTime()"
+                    />
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Scale</label>
+                    <input
+                        type="number"
+                        class="control-input"
+                        id="scale"
+                        value="1"
+                        step="0.1"
+                        autocomplete="off"
+                        onchange="updateScale()"
+                    />
+                </div>
+            </div>
+
+            <!-- Third Quarter: File Loading -->
+            <div class="quarter">
+                <button
+                    id="schBtn"
+                    class="control-btn file-btn"
+                    onclick="document.getElementById('schFile').click()"
+                >
+                    📄 Load SCH
+                </button>
+                <button
+                    id="confBtn"
+                    class="control-btn file-btn"
+                    onclick="document.getElementById('confFile').click()"
+                >
+                    ⚙ Load CONF
+                </button>
+                <button
+                    id="animBtn"
+                    class="control-btn file-btn"
+                    onclick="document.getElementById('animFile').click()"
+                >
+                    📊 Load ANIM
+                </button>
+                <button
+                    id="verifyBtn"
+                    class="control-btn verify-btn"
+                    onclick="verify()"
+                >
+                    ✅ Verify
+                </button>
+
+                <!-- Hidden file inputs -->
+                <input
+                    type="file"
+                    id="schFile"
+                    class="hidden-input"
+                    accept=".svg"
+                    onchange="loadSchematic(this)"
+                />
+                <input
+                    type="file"
+                    id="confFile"
+                    class="hidden-input"
+                    accept=".json"
+                    onchange="loadConfig(this)"
+                />
+                <input
+                    type="file"
+                    id="animFile"
+                    class="hidden-input"
+                    accept=".csv"
+                    onchange="loadAnimation(this)"
+                />
+            </div>
+
+            <!-- Fourth Quarter: Terminal Display -->
+            <div class="quarter">
+                <div class="terminal" id="terminal">
+                    Ready - Select files first.
+                </div>
+            </div>
+        </div>
+
+        <script src="index.js"></script>
+    </body>
+</html>
