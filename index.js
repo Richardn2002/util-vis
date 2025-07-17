@@ -258,27 +258,29 @@ function verify() {
 
 const repeatButton = document.getElementById("repeatBtn");
 
+let isDragging = false;
+let animationProgress = 0; // 0 to 1
+
 let isStarted = false;
 let isPlaying = false;
 let isRepeating = false;
-let animationStartTime = null;
-let pauseStartTime = 0;
-let totalPausedTime = 0;
+let lastAnimateTime;
 
 function animate(currentTime) {
   if (!isPlaying) return;
 
-  const animation_duration = ((endTime - startTime) / scale) * 1000;
+  if (lastAnimateTime !== 0) {
+    // requested by the last requestAnimationFrame, value set to last performance.now() just before draw
+    animationProgress +=
+      (((performance.now() - lastAnimateTime) / 1000) * scale) /
+      (endTime - startTime);
+  } // else, first ever request of animate
 
-  let elapsedTime = currentTime - animationStartTime - totalPausedTime;
-
-  if (elapsedTime >= animation_duration) {
+  if (animationProgress >= 1) {
     // If end reached
     if (isRepeating) {
       // Reset for repeat
-      animationStartTime = currentTime;
-      totalPausedTime = 0;
-      elapsedTime = 0;
+      animationProgress = 0;
     } else {
       // Animation finished, stop playing
       terminal.textContent = "Animation finished.";
@@ -288,7 +290,8 @@ function animate(currentTime) {
     }
   }
 
-  draw(elapsedTime);
+  lastAnimateTime = performance.now();
+  draw();
 
   if (isPlaying) {
     requestAnimationFrame(animate);
@@ -305,12 +308,12 @@ function playAnimation() {
 
   terminal.textContent = "Playing animation.";
   disableInputs();
-  animationStartTime = performance.now();
+  animationProgress = 0;
   isStarted = true;
   isPlaying = true;
-  totalPausedTime = 0;
 
   // Start the animation loop
+  lastAnimateTime = 0;
   requestAnimationFrame(animate);
 }
 
@@ -324,13 +327,12 @@ function pauseAnimation() {
     terminal.textContent = "Animation paused.";
     enableInputs();
     isPlaying = false;
-    pauseStartTime = performance.now();
   } else {
     // Resume from pause
     terminal.textContent = "Playing animation.";
     disableInputs();
     isPlaying = true;
-    totalPausedTime += performance.now() - pauseStartTime;
+    lastAnimateTime = 0;
     requestAnimationFrame(animate);
   }
 }
@@ -387,8 +389,9 @@ function modifyElement(element, attributes) {
   }
 }
 
-function draw(time) {
-  const animTime = (time / 1000) * scale + startTime;
+function draw() {
+  const animTime =
+    (1 - animationProgress) * startTime + animationProgress * endTime;
   let animIndex;
   if (animTime >= endTime) {
     animIndex = anim["timestamps"].length - 1;
