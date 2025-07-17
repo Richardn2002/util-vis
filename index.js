@@ -423,6 +423,7 @@ function draw(time) {
   let setRequests = {};
   for (const [i, point] of signal.entries()) {
     const name = conf["mapping"][anim["signalNames"][i]];
+    if (!name) continue;
 
     const elementConf = conf["elements"][name];
     if (elementConf) {
