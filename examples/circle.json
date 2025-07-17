@@ -10,18 +10,18 @@
   "elements": {
     "circleA": {
       "0": {
-        "style": "fill: red"
+        "style": { "fill": "red", "stroke": "orange" }
       },
       "1": {
-        "style": "fill: blue"
+        "style": { "fill": "blue", "stroke": "green" }
       }
     },
     "circleB": {
       "0": {
-        "style": "fill: red"
+        "fill": "red"
       },
       "1": {
-        "style": "fill: blue"
+        "fill": "blue"
       }
     }
   },
@@ -29,18 +29,18 @@
     "circles": {
       "circleC": {
         "0": {
-          "style": "fill: red"
+          "style": { "fill": "red" }
         },
         "1": {
-          "style": "fill: blue"
+          "style": { "fill": "blue" }
         }
       },
       "circleD": {
         "0": {
-          "style": "fill: red"
+          "style": { "fill": "red" }
         },
         "1": {
-          "style": "fill: blue"
+          "style": { "fill": "blue" }
         }
       }
     }

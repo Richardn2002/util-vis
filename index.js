@@ -360,6 +360,31 @@ function lowerBound(arr, searchKey) {
   return ans;
 }
 
+function modifyElement(element, attribute, value) {
+  if (attribute == "style") {
+    let oldValues = (element.getAttribute("style") ?? "").split(";");
+    let newValues = [];
+    for (let [styleAttribute, styleValue] of Object.entries(value)) {
+      const setString = styleAttribute + ":" + styleValue;
+      let existing = false;
+      for (let [i, oldValue] of oldValues.entries()) {
+        if (oldValue.startsWith(styleAttribute)) {
+          existing = true;
+          oldValues[i] = setString;
+          break;
+        }
+      }
+      if (!existing) {
+        newValues.push(setString);
+      }
+    }
+
+    element.setAttribute("style", oldValues.concat(newValues).join(";"));
+  } else {
+    element.setAttribute(attribute, value);
+  }
+}
+
 function draw(time) {
   const animTime = (time / 1000) * scale + startTime;
   let animIndex;
@@ -376,9 +401,9 @@ function draw(time) {
     const elementConf = conf["elements"][name];
     if (elementConf) {
       const attributes = elementConf[point];
-      for (const attribute in attributes) {
-        const element = document.getElementById(name);
-        element.setAttribute(attribute, attributes[attribute]);
+      const element = document.getElementById(name);
+      for (const [attribute, value] of Object.entries(attributes)) {
+        modifyElement(element, attribute, value);
       }
     }
 
