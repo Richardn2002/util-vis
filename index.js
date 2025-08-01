@@ -262,12 +262,14 @@ const progressFill = document.getElementById("progressFill");
 const repeatButton = document.getElementById("repeatBtn");
 
 let isDragging = false;
-let animationProgress = 0; // 0 to 1
+// [0, 1]. If exactly 1, means the last frame has already been rendered
+let animationProgress = 0;
 
 let isStarted = false;
 let isPlaying = false;
 let isRepeating = false;
-let lastAnimateTime;
+// If exactly 0, means current render pass is the first one during a play through (just started or unpaused)
+let lastAnimateTime = 0;
 
 progressBar.addEventListener("click", function (e) {
   if (!isDragging) {
@@ -397,7 +399,7 @@ function toggleRepeat() {
 function lowerBound(arr, searchKey) {
   let low = 0;
   let high = arr.length - 1;
-  let ans = arr.length - 1; // Default to arr.length if searchKey greater than all
+  let ans = arr.length - 1; // Default to arr.length - 1 if searchKey greater than all
 
   while (low <= high) {
     const mid = Math.floor((low + high) / 2);
