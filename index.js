@@ -425,7 +425,9 @@ function pauseAnimation() {
 
 function toggleRepeat() {
   isRepeating = !isRepeating;
+
   repeatButton.textContent = isRepeating ? "🔁 Repeating" : "🔁 Repeat";
+  repeatButton.classList.toggle("active");
 }
 
 /* Drawing */
