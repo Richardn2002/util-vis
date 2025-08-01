@@ -158,6 +158,14 @@
             background-color: #c0392b;
         }
 
+        /* Step button */
+        .control-btn.step {
+            background-color: #27ae60;
+        }
+        .control-btn.step:hover {
+            background-color: #229954;
+        }
+
         /* Input styling */
         .control-input {
             background-color: #34495e;
@@ -301,6 +309,12 @@
                     onclick="toggleRepeat()"
                 >
                     🔁 Repeat
+                </button>
+                <button class="control-btn step" onclick="step(-1)">
+                    &lt;
+                </button>
+                <button class="control-btn step" onclick="step(+1)">
+                    &gt;
                 </button>
             </div>
 

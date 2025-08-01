@@ -430,6 +430,25 @@ function toggleRepeat() {
   repeatButton.classList.toggle("active");
 }
 
+function step(s) {
+  if (isPlaying) {
+    pauseAnimation();
+  }
+  terminal.textContent = "Stepping.";
+
+  animationFrame += s >= 0 ? 1 : -1;
+  animationFrame = Math.max(
+    0,
+    Math.min(anim["timestamps"].length - 1, animationFrame),
+  );
+
+  let animTime = anim["timestamps"][animationFrame];
+  animationProgress = (animTime - startTime) / (endTime - startTime);
+  animationProgress = Math.max(0, Math.min(1, animationProgress));
+
+  draw();
+}
+
 /* Drawing */
 
 function modifyElement(element, attributes) {
