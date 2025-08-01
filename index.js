@@ -321,18 +321,12 @@ function setProgress(progress) {
 function animate(currentTime) {
   if (!isPlaying) return;
 
-  if (lastAnimateTime !== 0) {
-    // requested by the last requestAnimationFrame, value set to last performance.now() just before draw
-    animationProgress +=
-      (((performance.now() - lastAnimateTime) / 1000) * scale) /
-      (endTime - startTime);
-  } // else, first ever request of animate
-
-  if (animationProgress >= 1) {
-    // If end reached
+  if (animationProgress == 1) {
+    // last frame has already been rendered
     if (isRepeating) {
       // Reset for repeat
       animationProgress = 0;
+      lastAnimateTime = 0;
     } else {
       // Animation finished, stop playing
       terminal.textContent = "Animation finished.";
@@ -342,9 +336,21 @@ function animate(currentTime) {
     }
   }
 
-  lastAnimateTime = performance.now();
+  if (lastAnimateTime !== 0) {
+    // requested by the last requestAnimationFrame, value set to last timestamp
+    animationProgress +=
+      (((currentTime - lastAnimateTime) / 1000) * scale) /
+      (endTime - startTime);
+  } // else, first ever request of animate
+
+  if (animationProgress > 1) {
+    // make sure last frame is rendered and mark end
+    animationProgress = 1;
+  }
+
   draw();
 
+  lastAnimateTime = currentTime;
   if (isPlaying) {
     requestAnimationFrame(animate);
   }
