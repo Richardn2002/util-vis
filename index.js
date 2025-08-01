@@ -192,6 +192,11 @@ function loadAnimation(input) {
     let timestamps = [];
     let signals = [];
     for (let i = 1; i < lines.length; i++) {
+      // skip empty new line, usually caused by the trailing \n in a file
+      if (lines[i].length == 0) {
+        continue;
+      }
+
       const line = lines[i].replace(/\s+/g, "").split(",");
       // use integer time but string signal
       timestamps.push(parseInt(line[0]));
@@ -280,15 +285,16 @@ function setProgress(progress) {
   const animTime =
     (1 - animationProgress) * startTime + animationProgress * endTime;
 
-  let lowerBound = (arr, searchKey) => {
+  // return the smallest index such that arr[index] > searchKey
+  let upperBound = (arr, searchKey) => {
     let low = 0;
     let high = arr.length - 1;
-    let ans = arr.length - 1; // Default to arr.length - 1 if searchKey greater than all
+    let ans = arr.length; // Default to arr.length if searchKey greater than all
 
     while (low <= high) {
       const mid = Math.floor((low + high) / 2);
 
-      if (arr[mid] >= searchKey) {
+      if (arr[mid] > searchKey) {
         ans = mid;
         high = mid - 1;
       } else {
@@ -297,7 +303,7 @@ function setProgress(progress) {
     }
     return ans;
   };
-  animationFrame = lowerBound(anim["timestamps"], animTime);
+  animationFrame = upperBound(anim["timestamps"], animTime) - 1;
 }
 
 progressBar.addEventListener("click", function (e) {
