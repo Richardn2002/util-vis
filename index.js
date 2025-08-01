@@ -264,12 +264,41 @@ const repeatButton = document.getElementById("repeatBtn");
 let isDragging = false;
 // [0, 1]. If exactly 1, means the last frame has already been rendered
 let animationProgress = 0;
+// the exact frame index corresponding to animationProgress
+let animationFrame = 0;
 
 let isStarted = false;
 let isPlaying = false;
 let isRepeating = false;
 // If exactly 0, means current render pass is the first one during a play through (just started or unpaused)
 let lastAnimateTime = 0;
+
+// properly set variables (animationProgress and animationFrame) for jumping to a point in [0, 1]
+function setProgress(progress) {
+  animationProgress = progress;
+
+  const animTime =
+    (1 - animationProgress) * startTime + animationProgress * endTime;
+
+  let lowerBound = (arr, searchKey) => {
+    let low = 0;
+    let high = arr.length - 1;
+    let ans = arr.length - 1; // Default to arr.length - 1 if searchKey greater than all
+
+    while (low <= high) {
+      const mid = Math.floor((low + high) / 2);
+
+      if (arr[mid] >= searchKey) {
+        ans = mid;
+        high = mid - 1;
+      } else {
+        low = mid + 1;
+      }
+    }
+    return ans;
+  };
+  animationFrame = lowerBound(anim["timestamps"], animTime);
+}
 
 progressBar.addEventListener("click", function (e) {
   if (!isDragging) {
@@ -310,14 +339,6 @@ document.addEventListener("mouseup", function () {
   }
 });
 
-function setProgress(progress) {
-  animationProgress = progress;
-
-  const percentage = progress * 100;
-  progressFill.style.width = percentage + "%";
-  progressHandle.style.left = percentage + "%";
-}
-
 function animate(currentTime) {
   if (!isPlaying) return;
 
@@ -325,7 +346,7 @@ function animate(currentTime) {
     // last frame has already been rendered
     if (isRepeating) {
       // Reset for repeat
-      animationProgress = 0;
+      setProgress(0);
       lastAnimateTime = 0;
     } else {
       // Animation finished, stop playing
@@ -341,11 +362,12 @@ function animate(currentTime) {
     animationProgress +=
       (((currentTime - lastAnimateTime) / 1000) * scale) /
       (endTime - startTime);
+    setProgress(animationProgress);
   } // else, first ever request of animate
 
   if (animationProgress > 1) {
     // make sure last frame is rendered and mark end
-    animationProgress = 1;
+    setProgress(1);
   }
 
   draw();
@@ -366,7 +388,7 @@ function playAnimation() {
 
   terminal.textContent = "Playing animation.";
   disableInputs();
-  animationProgress = 0;
+  setProgress(0);
   isStarted = true;
   isPlaying = true;
 
@@ -402,24 +424,6 @@ function toggleRepeat() {
 
 /* Drawing */
 
-function lowerBound(arr, searchKey) {
-  let low = 0;
-  let high = arr.length - 1;
-  let ans = arr.length - 1; // Default to arr.length - 1 if searchKey greater than all
-
-  while (low <= high) {
-    const mid = Math.floor((low + high) / 2);
-
-    if (arr[mid] >= searchKey) {
-      ans = mid;
-      high = mid - 1;
-    } else {
-      low = mid + 1;
-    }
-  }
-  return ans;
-}
-
 function modifyElement(element, attributes) {
   for (const [attribute, value] of Object.entries(attributes)) {
     if (attribute == "style") {
@@ -448,17 +452,13 @@ function modifyElement(element, attributes) {
 }
 
 function draw() {
-  setProgress(animationProgress);
+  // render progress bar
+  const percentage = animationProgress * 100;
+  progressFill.style.width = percentage + "%";
+  progressHandle.style.left = percentage + "%";
 
-  const animTime =
-    (1 - animationProgress) * startTime + animationProgress * endTime;
-  let animIndex;
-  if (animTime >= endTime) {
-    animIndex = anim["timestamps"].length - 1;
-  } else {
-    animIndex = lowerBound(anim["timestamps"], animTime);
-  }
-  const signal = anim["signals"][animIndex];
+  // render svg
+  const signal = anim["signals"][animationFrame];
 
   /*
   {
