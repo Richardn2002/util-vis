@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Vivify Embed Example</title>
+    </head>
+    <style>
+        body {
+            margin: 0;
+            padding-left: 20%;
+            padding-right: 20%;
+            font-family: Arial, sans-serif;
+        }
+
+        .vivify-container {
+            position: relative;
+            height: 400px;
+            width: 100%;
+        }
+
+        .vivify {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #f5f5f5;
+        }
+    </style>
+    <body>
+        <script src="embed-demo.js"></script>
+
+        <h1>Vivify Embed Example</h1>
+        <p>Text before iframe.</p>
+        <div class="vivify-container">
+            <iframe
+                onload="load()"
+                id="vivify"
+                src="../index.html"
+                class="vivify"
+            ></iframe>
+        </div>
+        <p>Text after iframe.</p>
+    </body>
+</html>
