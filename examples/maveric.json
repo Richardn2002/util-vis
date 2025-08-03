@@ -1,0 +1,633 @@
+{
+  "animStart": 650741250,
+  "animEnd": 660261250,
+  "animScale": 200000,
+  "mapping": {
+    "core0_compute": "cnm0",
+    "core1_compute": "cnm1",
+    "core2_compute": "cnm2",
+    "core3_compute": "cnm3",
+    "core4_compute": "cnm4",
+    "core5_compute": "cnm5",
+    "core6_compute": "cnm6",
+    "core7_compute": "cnm7",
+    "tb.i_ahb_s7.i_ahb_s7_sys_port_wrapper.i_ahb_ewc.fifo_re[0]": "fifo_re[0]",
+    "tb.i_ahb_s7.i_ahb_s7_sys_port_wrapper.i_ahb_ewc.fifo_re[1]": "cnm1_out",
+    "tb.i_ahb_s7.i_ahb_s7_sys_port_wrapper.i_ahb_ewc.fifo_re[2]": "cnm2_out",
+    "tb.i_ahb_s7.i_ahb_s7_sys_port_wrapper.i_ahb_ewc.fifo_re[3]": "cnm3_out",
+    "tb.i_ahb_s7.i_ahb_s7_sys_port_wrapper.i_ahb_ewc.fifo_re[4]": "cnm4_out",
+    "tb.i_ahb_s7.i_ahb_s7_sys_port_wrapper.i_ahb_ewc.fifo_re[5]": "cnm5_out",
+    "tb.i_ahb_s7.i_ahb_s7_sys_port_wrapper.i_ahb_ewc.fifo_re[6]": "cnm6_out",
+    "tb.i_ahb_s7.i_ahb_s7_sys_port_wrapper.i_ahb_ewc.fifo_re[7]": "cnm7_out",
+    "bus_fapu": "ewc_bus",
+    "bus_core0": "bus_core0",
+    "bus_core1": "bus_core1",
+    "bus_core2": "bus_core2",
+    "bus_core3": "bus_core3",
+    "bus_core4": "bus_core4",
+    "bus_core5": "bus_core5",
+    "bus_core6": "bus_core6",
+    "bus_core7": "bus_core7",
+    "tb.i_ahb_s7.ahb_mem.slave_in.trans[1]": "mem_bus"
+  },
+  "elements": {
+    "cnm0": {
+      "0": {
+        "style": {
+          "fill-opacity": "50%"
+        }
+      },
+      "1": {
+        "style": {
+          "fill-opacity": "100%"
+        }
+      }
+    },
+    "cnm1": {
+      "0": {
+        "style": {
+          "fill-opacity": "50%"
+        }
+      },
+      "1": {
+        "style": {
+          "fill-opacity": "100%"
+        }
+      }
+    },
+    "cnm2": {
+      "0": {
+        "style": {
+          "fill-opacity": "50%"
+        }
+      },
+      "1": {
+        "style": {
+          "fill-opacity": "100%"
+        }
+      }
+    },
+    "cnm3": {
+      "0": {
+        "style": {
+          "fill-opacity": "50%"
+        }
+      },
+      "1": {
+        "style": {
+          "fill-opacity": "100%"
+        }
+      }
+    },
+    "cnm4": {
+      "0": {
+        "style": {
+          "fill-opacity": "50%"
+        }
+      },
+      "1": {
+        "style": {
+          "fill-opacity": "100%"
+        }
+      }
+    },
+    "cnm5": {
+      "0": {
+        "style": {
+          "fill-opacity": "50%"
+        }
+      },
+      "1": {
+        "style": {
+          "fill-opacity": "100%"
+        }
+      }
+    },
+    "cnm6": {
+      "0": {
+        "style": {
+          "fill-opacity": "50%"
+        }
+      },
+      "1": {
+        "style": {
+          "fill-opacity": "100%"
+        }
+      }
+    },
+    "cnm7": {
+      "0": {
+        "style": {
+          "fill-opacity": "50%"
+        }
+      },
+      "1": {
+        "style": {
+          "fill-opacity": "100%"
+        }
+      }
+    },
+    "cnm1_out": {
+      "0": {
+        "style": {
+          "display": "none"
+        }
+      },
+      "1": {
+        "style": {
+          "display": "inline"
+        }
+      }
+    },
+    "cnm2_out": {
+      "0": {
+        "style": {
+          "display": "none"
+        }
+      },
+      "1": {
+        "style": {
+          "display": "inline"
+        }
+      }
+    },
+    "cnm3_out": {
+      "0": {
+        "style": {
+          "display": "none"
+        }
+      },
+      "1": {
+        "style": {
+          "display": "inline"
+        }
+      }
+    },
+    "cnm4_out": {
+      "0": {
+        "style": {
+          "display": "none"
+        }
+      },
+      "1": {
+        "style": {
+          "display": "inline"
+        }
+      }
+    },
+    "cnm5_out": {
+      "0": {
+        "style": {
+          "display": "none"
+        }
+      },
+      "1": {
+        "style": {
+          "display": "inline"
+        }
+      }
+    },
+    "cnm6_out": {
+      "0": {
+        "style": {
+          "display": "none"
+        }
+      },
+      "1": {
+        "style": {
+          "display": "inline"
+        }
+      }
+    },
+    "cnm7_out": {
+      "0": {
+        "style": {
+          "display": "none"
+        }
+      },
+      "1": {
+        "style": {
+          "display": "inline"
+        }
+      }
+    },
+    "ewc_bus": {
+      "0": {
+        "style": {
+          "display": "none"
+        }
+      },
+      "1": {
+        "style": {
+          "display": "inline"
+        }
+      }
+    }
+  },
+  "groups": {
+    "fifo_re[0]": {
+      "ewc": {
+        "0": {
+          "style": {
+            "fill-opacity": "50%"
+          }
+        },
+        "1": {
+          "style": {
+            "fill-opacity": "100%"
+          }
+        }
+      },
+      "cnm0_out": {
+        "0": {
+          "style": {
+            "display": "none"
+          }
+        },
+        "1": {
+          "style": {
+            "display": "inline"
+          }
+        }
+      }
+    },
+    "bus_core0": {
+      "ahb0": {
+        "0": {
+          "style": {
+            "display": "none"
+          }
+        },
+        "1": {
+          "style": {
+            "display": "inline"
+          }
+        }
+      },
+      "cnm0_in": {
+        "0": {
+          "style": {
+            "display": "none"
+          }
+        },
+        "1": {
+          "style": {
+            "display": "inline"
+          }
+        }
+      }
+    },
+    "bus_core1": {
+      "ahb0": {
+        "0": {
+          "style": {
+            "display": "none"
+          }
+        },
+        "1": {
+          "style": {
+            "display": "inline"
+          }
+        }
+      },
+      "ahb1": {
+        "0": {
+          "style": {
+            "display": "none"
+          }
+        },
+        "1": {
+          "style": {
+            "display": "inline"
+          }
+        }
+      },
+      "cnm1_in": {
+        "0": {
+          "style": {
+            "display": "none"
+          }
+        },
+        "1": {
+          "style": {
+            "display": "inline"
+          }
+        }
+      }
+    },
+    "bus_core2": {
+      "ahb0": {
+        "0": {
+          "style": {
+            "display": "none"
+          }
+        },
+        "1": {
+          "style": {
+            "display": "inline"
+          }
+        }
+      },
+      "ahb1": {
+        "0": {
+          "style": {
+            "display": "none"
+          }
+        },
+        "1": {
+          "style": {
+            "display": "inline"
+          }
+        }
+      },
+      "ahb2": {
+        "0": {
+          "style": {
+            "display": "none"
+          }
+        },
+        "1": {
+          "style": {
+            "display": "inline"
+          }
+        }
+      },
+      "cnm2_in": {
+        "0": {
+          "style": {
+            "display": "none"
+          }
+        },
+        "1": {
+          "style": {
+            "display": "inline"
+          }
+        }
+      }
+    },
+    "bus_core3": {
+      "ahb0": {
+        "0": {
+          "style": {
+            "display": "none"
+          }
+        },
+        "1": {
+          "style": {
+            "display": "inline"
+          }
+        }
+      },
+      "ahb1": {
+        "0": {
+          "style": {
+            "display": "none"
+          }
+        },
+        "1": {
+          "style": {
+            "display": "inline"
+          }
+        }
+      },
+      "ahb2": {
+        "0": {
+          "style": {
+            "display": "none"
+          }
+        },
+        "1": {
+          "style": {
+            "display": "inline"
+          }
+        }
+      },
+      "ahb3": {
+        "0": {
+          "style": {
+            "display": "none"
+          }
+        },
+        "1": {
+          "style": {
+            "display": "inline"
+          }
+        }
+      },
+      "cnm3_in": {
+        "0": {
+          "style": {
+            "display": "none"
+          }
+        },
+        "1": {
+          "style": {
+            "display": "inline"
+          }
+        }
+      }
+    },
+    "bus_core4": {
+      "ahb0": {
+        "0": {
+          "style": {
+            "display": "none"
+          }
+        },
+        "1": {
+          "style": {
+            "display": "inline"
+          }
+        }
+      },
+      "cnm4_in": {
+        "0": {
+          "style": {
+            "display": "none"
+          }
+        },
+        "1": {
+          "style": {
+            "display": "inline"
+          }
+        }
+      }
+    },
+    "bus_core5": {
+      "ahb0": {
+        "0": {
+          "style": {
+            "display": "none"
+          }
+        },
+        "1": {
+          "style": {
+            "display": "inline"
+          }
+        }
+      },
+      "ahb1": {
+        "0": {
+          "style": {
+            "display": "none"
+          }
+        },
+        "1": {
+          "style": {
+            "display": "inline"
+          }
+        }
+      },
+      "cnm5_in": {
+        "0": {
+          "style": {
+            "display": "none"
+          }
+        },
+        "1": {
+          "style": {
+            "display": "inline"
+          }
+        }
+      }
+    },
+    "bus_core6": {
+      "ahb0": {
+        "0": {
+          "style": {
+            "display": "none"
+          }
+        },
+        "1": {
+          "style": {
+            "display": "inline"
+          }
+        }
+      },
+      "ahb1": {
+        "0": {
+          "style": {
+            "display": "none"
+          }
+        },
+        "1": {
+          "style": {
+            "display": "inline"
+          }
+        }
+      },
+      "ahb2": {
+        "0": {
+          "style": {
+            "display": "none"
+          }
+        },
+        "1": {
+          "style": {
+            "display": "inline"
+          }
+        }
+      },
+      "cnm6_in": {
+        "0": {
+          "style": {
+            "display": "none"
+          }
+        },
+        "1": {
+          "style": {
+            "display": "inline"
+          }
+        }
+      }
+    },
+    "bus_core7": {
+      "ahb0": {
+        "0": {
+          "style": {
+            "display": "none"
+          }
+        },
+        "1": {
+          "style": {
+            "display": "inline"
+          }
+        }
+      },
+      "ahb1": {
+        "0": {
+          "style": {
+            "display": "none"
+          }
+        },
+        "1": {
+          "style": {
+            "display": "inline"
+          }
+        }
+      },
+      "ahb2": {
+        "0": {
+          "style": {
+            "display": "none"
+          }
+        },
+        "1": {
+          "style": {
+            "display": "inline"
+          }
+        }
+      },
+      "ahb3": {
+        "0": {
+          "style": {
+            "display": "none"
+          }
+        },
+        "1": {
+          "style": {
+            "display": "inline"
+          }
+        }
+      },
+      "cnm7_in": {
+        "0": {
+          "style": {
+            "display": "none"
+          }
+        },
+        "1": {
+          "style": {
+            "display": "inline"
+          }
+        }
+      }
+    },
+    "mem_bus": {
+      "mem_bus": {
+        "0": {
+          "style": {
+            "display": "none"
+          }
+        },
+        "1": {
+          "style": {
+            "display": "inline"
+          }
+        }
+      },
+      "mem": {
+        "0": {
+          "style": {
+            "fill-opacity": "50%"
+          }
+        },
+        "1": {
+          "style": {
+            "fill-opacity": "100%"
+          }
+        }
+      }
+    }
+  }
+}
