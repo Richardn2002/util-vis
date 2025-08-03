@@ -229,6 +229,7 @@ function step(s) {
   if (isPlaying) {
     pauseAnimation();
   }
+  isStarted = true;
 
   animationFrame += s >= 0 ? 1 : -1;
   animationFrame = Math.max(
