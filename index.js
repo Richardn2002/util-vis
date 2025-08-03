@@ -1,24 +1,11 @@
 "use strict";
 
-/* User Interface */
-
-const startTimeBox = document.getElementById("startTime");
-const endTimeBox = document.getElementById("endTime");
-const scaleBox = document.getElementById("scale");
-
-const schBtn = document.getElementById("schBtn");
-const confBtn = document.getElementById("confBtn");
-const animBtn = document.getElementById("animBtn");
-const verifyBtn = document.getElementById("verifyBtn");
-
-const terminal = document.getElementById("terminal");
 const svgContainer = document.getElementById("svgContainer");
 
 let startTime = 0;
 let endTime = 10;
 let scale = 1;
 
-let schLoaded = false;
 let conf = null;
 /*
 {
@@ -30,211 +17,68 @@ let conf = null;
 let anim = null;
 let verified = false;
 
-for (const element of [schBtn, confBtn, animBtn, verifyBtn]) {
-  element.addEventListener("mouseover", () => {
-    if (isPlaying) {
-      element.style.cursor = "not-allowed";
+function load(data) {
+  /* Configuration */
+
+  try {
+    conf = JSON.parse(data.conf);
+  } catch {
+    reportError("Config file not valid JSON.");
+    return;
+  }
+
+  let fieldValues = [0, 0, 0];
+  ["animStart", "animEnd", "animScale"].forEach((field, i) => {
+    if (conf[field]) {
+      fieldValues[i] = conf[field];
+    } else {
+      reportError("'" + field + "' missing from config");
+      return;
     }
   });
-  element.addEventListener("mouseout", function () {
-    element.style.cursor = "default";
+  [startTime, endTime, scale] = fieldValues;
+
+  ["mapping", "elements", "groups"].forEach((field) => {
+    if (!conf[field]) {
+      reportError("'" + field + "' missing from config");
+      return;
+    }
   });
-}
-function disableInputs() {
-  for (const element of [
-    startTimeBox,
-    endTimeBox,
-    scaleBox,
-    schBtn,
-    confBtn,
-    animBtn,
-    verifyBtn,
-  ]) {
-    element.disabled = true;
-  }
-}
-function enableInputs() {
-  for (const element of [
-    startTimeBox,
-    endTimeBox,
-    scaleBox,
-    schBtn,
-    confBtn,
-    animBtn,
-    verifyBtn,
-  ]) {
-    element.disabled = false;
-  }
-}
 
-function updateStartTime() {
-  startTime = startTimeBox.value;
+  /* Animation */
 
-  if (startTime > endTime) {
-    startTime = endTime - scale;
-    startTimeBox.value = startTime;
-  }
-}
-function updateEndTime() {
-  endTime = endTimeBox.value;
+  const lines = data.anim.split("\n");
+  const signalNames = lines[0].replace(/\s+/g, "").split(",").slice(1);
 
-  if (endTime < startTime) {
-    endTime = startTime + scale;
-    endTimeBox.value = endTime;
-  }
-}
-function updateScale() {
-  scale = scaleBox.value;
-
-  if (scale == 0) {
-    scale = 1;
-    scaleBox.value = 1;
-  }
-}
-
-function loadSchematic(input) {
-  const file = input.files[0];
-
-  if (file.type !== "image/svg+xml") {
-    terminal.textContent = "Chosen file is not valid SVG.";
-    return;
-  }
-
-  const reader = new FileReader();
-
-  reader.onload = function (e) {
-    svgContainer.innerHTML = e.target.result;
-    svgContainer.children[0].setAttribute(
-      "style",
-      "position:absolute;left:0; top:0; width:100%; height:100%",
-    );
-
-    terminal.textContent = "Schematic loaded.";
-    schLoaded = true;
-    verified = false;
-  };
-  reader.onerror = function () {
-    terminal.textContent = "Error loading schematic.";
-  };
-
-  reader.readAsText(file);
-}
-
-function loadConfig(input) {
-  const file = input.files[0];
-
-  const reader = new FileReader();
-
-  reader.onload = function (e) {
-    try {
-      const data = JSON.parse(e.target.result);
-
-      let startTimeFile = data["animStart"];
-      if (startTimeFile) {
-        startTime = startTimeFile;
-        startTimeBox.value = startTimeFile;
-      } else {
-        terminal.textContent = "'startTime' missing from config.";
-        return;
-      }
-      let endTimeFile = data["animEnd"];
-      if (endTimeFile) {
-        endTime = endTimeFile;
-        endTimeBox.value = endTimeFile;
-      } else {
-        terminal.textContent = "'endTime' missing from config.";
-        return;
-      }
-      let scaleFile = data["animScale"];
-      if (scaleFile) {
-        scale = scaleFile;
-        scaleBox.value = scaleFile;
-      } else {
-        terminal.textContent = "'animScale' missing from config.";
-        return;
-      }
-      if (!data["mapping"]) {
-        terminal.textContent = "'mapping' missing from config.";
-        return;
-      }
-      if (!data["elements"]) {
-        terminal.textContent = "'elements' missing from config.";
-        return;
-      }
-      if (!data["groups"]) {
-        terminal.textContent = "'groups' missing from config.";
-        return;
-      }
-
-      terminal.textContent = "Config loaded.";
-      conf = data;
-      verified = false;
-    } catch {
-      terminal.textContent = "Config file not valid JSON.";
-    }
-  };
-  reader.onerror = function () {
-    terminal.textContent = "Error loading config.";
-  };
-
-  reader.readAsText(file);
-}
-
-function loadAnimation(input) {
-  const file = input.files[0];
-
-  const reader = new FileReader();
-
-  reader.onload = function (e) {
-    const lines = e.target.result.split("\n");
-    const signalNames = lines[0].replace(/\s+/g, "").split(",").slice(1);
-
-    let timestamps = [];
-    let signals = [];
-    for (let i = 1; i < lines.length; i++) {
-      // skip empty new line, usually caused by the trailing \n in a file
-      if (lines[i].length == 0) {
-        continue;
-      }
-
-      const line = lines[i].replace(/\s+/g, "").split(",");
-      // use integer time but string signal
-      timestamps.push(parseInt(line[0]));
-      signals.push(line.slice(1));
+  let timestamps = [];
+  let signals = [];
+  for (let i = 1; i < lines.length; i++) {
+    // skip empty new line, usually caused by the trailing \n in a file
+    if (lines[i].length == 0) {
+      continue;
     }
 
-    terminal.textContent = "Animation loaded.";
-    anim = {
-      signalNames: signalNames,
-      timestamps: timestamps,
-      signals: signals,
-    };
-    verified = false;
-  };
-  reader.onerror = function () {
-    terminal.textContent = "Error loading animation.";
+    const line = lines[i].replace(/\s+/g, "").split(",");
+    // use integer time but string signal
+    timestamps.push(parseInt(line[0]));
+    signals.push(line.slice(1));
+  }
+
+  anim = {
+    signalNames: signalNames,
+    timestamps: timestamps,
+    signals: signals,
   };
 
-  reader.readAsText(file);
-}
+  /* SVG */
 
-function verify() {
-  if (verified) {
-    terminal.textContent = "Already verified.";
-    return;
-  }
-  if (!schLoaded) {
-    terminal.textContent = "Schematic not loaded.";
-    return;
-  }
-  if (!conf) {
-    terminal.textContent = "Config not loaded.";
-    return;
-  }
-  if (!anim) {
-    terminal.textContent = "Animation not loaded.";
-    return;
-  }
+  svgContainer.innerHTML = data.sch;
+  svgContainer.children[0].setAttribute(
+    "style",
+    "position:absolute;left:0; top:0; width:100%; height:100%",
+  );
+
+  /* Overall Check */
 
   for (const signalName of anim["signalNames"]) {
     const mappedName = conf["mapping"][signalName];
@@ -244,29 +88,40 @@ function verify() {
 
     if (conf["elements"][mappedName]) {
       if (conf["groups"][mappedName]) {
-        terminal.textContent = `"${mappedName}" is both an element and a group.`;
+        reportError(`"${mappedName}" is both an element and a group.`);
         return;
       }
     } else {
       if (!conf["groups"][mappedName]) {
-        terminal.textContent = `"${mappedName}" is neither an element nor a group.`;
+        reportError(`"${mappedName}" is neither an element nor a group.`);
         return;
       }
     }
   }
 
-  terminal.textContent = "Input files verified.";
   verified = true;
+  reportVerified();
 }
 
-/* Animation Control */
+function playConfig(data) {
+  if (
+    data.startTime == undefined ||
+    data.endTime == undefined ||
+    data.scale == undefined ||
+    data.isRepeating == undefined
+  ) {
+    console.error(
+      "Vivify: Malformed config set, expected fields: startTime, endTime, scale, isRepeating.",
+    );
+    return;
+  }
 
-const progressBar = document.getElementById("progressBar");
-const progressHandle = document.getElementById("progressHandle");
-const progressFill = document.getElementById("progressFill");
-const repeatButton = document.getElementById("repeatBtn");
+  startTime = data.startTime;
+  endTime = data.endTime;
+  scale = data.scale;
+  isRepeating = data.isRepeating;
+}
 
-let isDragging = false;
 // [0, 1]. If exactly 1, means the last frame has already been rendered
 let animationProgress = 0;
 // the exact frame index corresponding to animationProgress
@@ -306,45 +161,6 @@ function setProgress(progress) {
   animationFrame = upperBound(anim["timestamps"], animTime) - 1;
 }
 
-progressBar.addEventListener("click", function (e) {
-  if (!isDragging) {
-    const rect = progressBar.getBoundingClientRect();
-    const clickX = e.clientX - rect.left;
-    const progress = Math.max(0, Math.min(1, clickX / rect.width));
-    setProgress(progress);
-
-    draw();
-  }
-});
-
-progressHandle.addEventListener("mousedown", function (e) {
-  if (isPlaying) {
-    pauseAnimation();
-  }
-
-  isDragging = true;
-  progressHandle.classList.add("dragging");
-  e.preventDefault();
-});
-
-document.addEventListener("mousemove", function (e) {
-  if (isDragging) {
-    const rect = progressBar.getBoundingClientRect();
-    const mouseX = e.clientX - rect.left;
-    const progress = Math.max(0, Math.min(1, mouseX / rect.width));
-    setProgress(progress);
-
-    draw();
-  }
-});
-
-document.addEventListener("mouseup", function () {
-  if (isDragging) {
-    isDragging = false;
-    progressHandle.classList.remove("dragging");
-  }
-});
-
 function animate(currentTime) {
   if (!isPlaying) return;
 
@@ -356,10 +172,8 @@ function animate(currentTime) {
       lastAnimateTime = 0;
     } else {
       // Animation finished, stop playing
-      terminal.textContent = "Animation finished.";
       isStarted = false;
       isPlaying = false;
-      enableInputs();
     }
   }
 
@@ -385,15 +199,6 @@ function animate(currentTime) {
 }
 
 function playAnimation() {
-  if (!verified) {
-    verify();
-    if (!verified) {
-      return;
-    }
-  }
-
-  terminal.textContent = "Playing animation.";
-  disableInputs();
   setProgress(0);
   isStarted = true;
   isPlaying = true;
@@ -410,31 +215,20 @@ function pauseAnimation() {
 
   if (isPlaying) {
     // Pause the animation
-    terminal.textContent = "Animation paused.";
-    enableInputs();
     isPlaying = false;
+    reportProgress();
   } else {
     // Resume from pause
-    terminal.textContent = "Playing animation.";
-    disableInputs();
     isPlaying = true;
     lastAnimateTime = 0;
     requestAnimationFrame(animate);
   }
 }
 
-function toggleRepeat() {
-  isRepeating = !isRepeating;
-
-  repeatButton.textContent = isRepeating ? "🔁 Repeating" : "🔁 Repeat";
-  repeatButton.classList.toggle("active");
-}
-
 function step(s) {
   if (isPlaying) {
     pauseAnimation();
   }
-  terminal.textContent = "Stepping.";
 
   animationFrame += s >= 0 ? 1 : -1;
   animationFrame = Math.max(
@@ -479,10 +273,8 @@ function modifyElement(element, attributes) {
 }
 
 function draw() {
-  // render progress bar
-  const percentage = animationProgress * 100;
-  progressFill.style.width = percentage + "%";
-  progressHandle.style.left = percentage + "%";
+  // inform parent of play progress
+  reportProgress();
 
   // render svg
   const signal = anim["signals"][animationFrame];
@@ -553,3 +345,82 @@ function draw() {
     modifyElement(element, attributesToSet);
   }
 }
+
+/* Interface with Parent */
+
+function reportError(msg) {
+  window.parent.postMessage(
+    Object({
+      type: "error",
+      data: msg,
+    }),
+    "*",
+  );
+}
+
+function reportVerified() {
+  window.parent.postMessage(
+    Object({
+      type: "verified",
+      data: Object({
+        startTime,
+        endTime,
+        scale,
+      }),
+    }),
+    "*",
+  );
+}
+
+function reportProgress() {
+  window.parent.postMessage(
+    Object({
+      type: "progress",
+      data: Object({
+        isPlaying,
+        animationProgress,
+        animationFrame,
+      }),
+    }),
+    "*",
+  );
+}
+
+window.addEventListener("message", (event) => {
+  switch (event.data.type) {
+    case "load":
+      load(event.data.data);
+      break;
+    case "playConfig":
+      playConfig(event.data.data);
+      break;
+    case "play":
+      if (!verified) {
+        console.error("Vivify: Play request received while nothing loaded.");
+        return;
+      }
+
+      playAnimation();
+      break;
+    case "pause":
+      pauseAnimation();
+      break;
+    case "step":
+      if (!verified) {
+        console.error("Vivify: Play request received while nothing loaded.");
+        return;
+      }
+
+      step(event.data.data);
+      break;
+    case "jump":
+      if (!verified) {
+        console.error("Vivify: Jump request received while nothing loaded.");
+        return;
+      }
+
+      setProgress(event.data.data);
+      draw();
+      break;
+  }
+});
