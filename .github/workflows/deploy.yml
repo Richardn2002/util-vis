@@ -1,0 +1,36 @@
+name: Deploy
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+on:
+  workflow_dispatch:
+  push:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Populate output folder
+        run: |
+          mkdir build
+          mv index.html index.js site/full-demo.html site/full-demo.js build/
+      - name: Fix paths
+        working-directory: build
+        run: |
+          mv index.html vivify.html
+          mv full-demo.html index.html
+          sed -i -e 's/..\/index.html/vivify.html/g' index.html
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+      - name: Upload artifacts
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "pages"
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
